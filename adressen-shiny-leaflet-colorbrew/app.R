@@ -27,7 +27,7 @@ ui <- bootstrapPage(
 server <- function(input, output, session) {
   
   # Reactive expression for the data subsetted to what the user selected
-  filteredData2 <- reactive({
+  filteredData <- reactive({
     adreslocaties[adreslocaties$Aantal.artsen >= input$rangeArtsen[1] & adreslocaties$Aantal.artsen <= input$rangeArtsen[2] & adreslocaties$INTEGO == input$intego,]
   })
   # This reactive expression represents the palette function,
@@ -52,9 +52,7 @@ server <- function(input, output, session) {
   # should be managed in its own observer.
   observe({
     pal <- colorpal()
-    
-    #leafletProxy("map", data = filteredData()) %>%
-      leafletProxy("map", data = filteredData2()) %>%
+      leafletProxy("map", data = filteredData()) %>%
       clearShapes() %>%
         addCircles(radius = ~Aantal.artsen * 200, weight = 1, color = "#777777", fillColor = ~pal(Aantal.artsen), 
                    fillOpacity = 0.7, popup = ~paste(Praktijk,"<br/>",Straat,Nummer,"<br/>",Postcode,Plaatsnaam)
@@ -73,7 +71,7 @@ server <- function(input, output, session) {
     if (input$legend) {
       pal <- colorpal()
       proxy %>% addLegend(position = "bottomright",
-                          pal = pal, values = ~Aantal.artsen
+                          pal = pal, values = ~Aantal.artsen 
       )
     }
   })
