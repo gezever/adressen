@@ -7,18 +7,18 @@ library(RColorBrewer)
 setwd("/home/gehau/git/adressen")
 
 adreslocaties <- read.csv("data/wel_en_niet_INTEGO_Antwerpen2.csv")
+# we sorteren hier Descending, zodat de kleinste bollen bovenaan liggen
+adreslocaties <-adreslocaties[order(-adreslocaties$Aantal.artsen),]
 
 ui <- bootstrapPage(
   tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
   leafletOutput("map", width = "100%", height = "100%"),
   absolutePanel(top = 10, right = 10,
-                sliderInput("range", "Magnitudes", min(quakes$mag), max(quakes$mag),
-                            value = range(quakes$mag), step = 0.1
-                ),
-                sliderInput("range2", "Aantal artsen", min(adreslocaties$Aantal.artsen), max(adreslocaties$Aantal.artsen),
+                sliderInput("rangeArtsen", "Aantal artsen", min(adreslocaties$Aantal.artsen), max(adreslocaties$Aantal.artsen),
                             value = range(adreslocaties$Aantal.artsen), step = 1
                 ),
-                selectInput("colors", "Color Scheme",
+                selectInput("intego", "Intego deelnemer?", choices=c(0, 1) ),
+                selectInput("colors", "Kleurenschema",
                             rownames(subset(brewer.pal.info, category %in% c("seq", "div")))
                 ),
                 checkboxInput("legend", "Show legend", TRUE)
@@ -28,22 +28,23 @@ ui <- bootstrapPage(
 server <- function(input, output, session) {
   
   # Reactive expression for the data subsetted to what the user selected
-  filteredData <- reactive({
-    quakes[quakes$mag >= input$range[1] & quakes$mag <= input$range[2],]
+  filteredData2 <- reactive({
+    adreslocaties[adreslocaties$Aantal.artsen >= input$rangeArtsen[1] & adreslocaties$Aantal.artsen <= input$rangeArtsen[2] & adreslocaties$INTEGO == input$intego,]
   })
-  
   # This reactive expression represents the palette function,
   # which changes as the user makes selections in UI.
   colorpal <- reactive({
-    colorNumeric(input$colors, quakes$mag)
+    colorNumeric(input$colors, adreslocaties$Aantal.artsen)
   })
   
   output$map <- renderLeaflet({
     # Use leaflet() here, and only include aspects of the map that
     # won't need to change dynamically (at least, not unless the
     # entire map is being torn down and recreated).
-    leaflet(quakes) %>% addTiles() %>%
-      fitBounds(~min(long), ~min(lat), ~max(long), ~max(lat))
+    leaflet() %>% 
+      #addTiles() %>% 
+      addProviderTiles(providers$Stamen.TonerLite ) %>%
+      setView(lng = 4.4, lat = 51.2, zoom = 12)
   })
   
   # Incremental changes to the map (in this case, replacing the
@@ -53,16 +54,18 @@ server <- function(input, output, session) {
   observe({
     pal <- colorpal()
     
-    leafletProxy("map", data = filteredData()) %>%
+    #leafletProxy("map", data = filteredData()) %>%
+      leafletProxy("map", data = filteredData2()) %>%
       clearShapes() %>%
-      addCircles(radius = ~10^mag/10, weight = 1, color = "#777777",
-                 fillColor = ~pal(mag), fillOpacity = 0.7, popup = ~paste(mag)
-      )
+      addCircles(radius = ~Aantal.artsen * 200, weight = 1, color = "#777777", fillColor = ~pal(Aantal.artsen), fillOpacity = 0.7, popup = ~paste(Praktijk)
+     
+    )
   })
   
   # Use a separate observer to recreate the legend as needed.
   observe({
-    proxy <- leafletProxy("map", data = quakes)
+    #proxy <- leafletProxy("map", data = quakes)
+    proxy <- leafletProxy("map", data = adreslocaties)
     
     # Remove any existing legend, and only if the legend is
     # enabled, create a new one.
@@ -70,7 +73,7 @@ server <- function(input, output, session) {
     if (input$legend) {
       pal <- colorpal()
       proxy %>% addLegend(position = "bottomright",
-                          pal = pal, values = ~mag
+                          pal = pal, values = ~Aantal.artsen
       )
     }
   })
