@@ -13,7 +13,7 @@ ui <- bootstrapPage(
   tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
   leafletOutput("map", width = "100%", height = "100%"),
   absolutePanel(top = 10, right = 10,
-                sliderInput("rangeArtsen", "Aantal artsen", min(adreslocaties$Aantal.artsen), max(adreslocaties$Aantal.artsen),
+                sliderInput("rangeArtsen", "Aantal artsen in de praktijk", min(adreslocaties$Aantal.artsen), max(adreslocaties$Aantal.artsen),
                             value = range(adreslocaties$Aantal.artsen), step = 1
                 ),
                 selectInput("intego", "Intego deelnemer?", choices=c(0, 1) ),
@@ -56,7 +56,8 @@ server <- function(input, output, session) {
     #leafletProxy("map", data = filteredData()) %>%
       leafletProxy("map", data = filteredData2()) %>%
       clearShapes() %>%
-      addCircles(radius = ~Aantal.artsen * 200, weight = 1, color = "#777777", fillColor = ~pal(Aantal.artsen), fillOpacity = 0.7, popup = ~paste(Praktijk)
+        addCircles(radius = ~Aantal.artsen * 200, weight = 1, color = "#777777", fillColor = ~pal(Aantal.artsen), 
+                   fillOpacity = 0.7, popup = ~paste(Praktijk,"<br/>",Straat,Nummer,"<br/>",Postcode,Plaatsnaam)
      
     )
   })
