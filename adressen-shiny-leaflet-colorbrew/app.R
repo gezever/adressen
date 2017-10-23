@@ -4,7 +4,6 @@ library(RColorBrewer)
 
 # zie https://rstudio.github.io/leaflet/shiny.html
 
-setwd("/home/gehau/git/adressen")
 
 adreslocaties <- read.csv("data/wel_en_niet_INTEGO_Antwerpen2.csv")
 # we sorteren hier Descending, zodat de kleinste bollen bovenaan liggen
