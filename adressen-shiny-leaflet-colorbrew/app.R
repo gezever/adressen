@@ -55,7 +55,7 @@ server <- function(input, output, session) {
       leafletProxy("map", data = filteredData()) %>%
       clearShapes() %>%
         addCircles(radius = ~Aantal.artsen * 50, weight = 1, color = "#777777", fillColor = ~pal(Aantal.artsen), 
-                   fillOpacity = 0.7, popup = ~paste(Praktijk,"<br/>",Straat,Nummer,"<br/>",Postcode,Plaatsnaam,"<br/>",Aantal.artsen"")
+                   fillOpacity = 0.7, popup = ~paste(Praktijk,"<br/>",Straat,Nummer,"<br/>",Postcode,Plaatsnaam,"<br/>",Aantal.artsen,"arts(en) in deze praktijk")
      
     )
   })
