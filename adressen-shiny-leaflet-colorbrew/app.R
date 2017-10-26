@@ -4,7 +4,7 @@ library(RColorBrewer)
 
 # zie https://rstudio.github.io/leaflet/shiny.html
 
-
+setwd('/home/gehau/git/watervogels')
 adreslocaties <- read.csv("data/huisartsenlocaties.csv")
 # we sorteren hier Descending, zodat de kleinste bollen bovenaan liggen
 adreslocaties <-adreslocaties[order(-adreslocaties$Aantal.artsen),]
