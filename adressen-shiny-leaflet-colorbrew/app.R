@@ -43,7 +43,7 @@ server <- function(input, output, session) {
     leaflet() %>% 
       #addTiles() %>% 
       addProviderTiles(providers$Stamen.TonerLite ) %>%
-      setView(lng = 4.4, lat = 51.2, zoom = 12)
+      setView(lng = 4.4695, lat = 51.21611, zoom = 12)
   })
   
   # Incremental changes to the map (in this case, replacing the
