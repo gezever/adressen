@@ -5,7 +5,7 @@ library(RColorBrewer)
 # zie https://rstudio.github.io/leaflet/shiny.html
 
 
-adreslocaties <- read.csv("data/wel_en_niet_INTEGO_Antwerpen2.csv")
+adreslocaties <- read.csv("data/huisartsenlocaties.csv")
 # we sorteren hier Descending, zodat de kleinste bollen bovenaan liggen
 adreslocaties <-adreslocaties[order(-adreslocaties$Aantal.artsen),]
 
@@ -54,8 +54,8 @@ server <- function(input, output, session) {
     pal <- colorpal()
       leafletProxy("map", data = filteredData()) %>%
       clearShapes() %>%
-        addCircles(radius = ~Aantal.artsen * 200, weight = 1, color = "#777777", fillColor = ~pal(Aantal.artsen), 
-                   fillOpacity = 0.7, popup = ~paste(Praktijk,"<br/>",Straat,Nummer,"<br/>",Postcode,Plaatsnaam)
+        addCircles(radius = ~Aantal.artsen * 50, weight = 1, color = "#777777", fillColor = ~pal(Aantal.artsen), 
+                   fillOpacity = 0.7, popup = ~paste(Praktijk,"<br/>",Straat,Nummer,"<br/>",Postcode,Plaatsnaam,"<br/>",Aantal.artsen"")
      
     )
   })
